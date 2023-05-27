@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Add Employees</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=20) }}
+        </p>
+        <p>
+            {{ form.id.label }}<br>
+            {{ form.id(id='id_field') }}
+        </p>
+        <p>
+            {{ form.dob.label }}<br>
+            {{ form.dob() }}
+        </p>
+        <p>
+            {{ form.position.label }}<br>
+            {{ form.position(size=20) }}
+        </p>
+        <p>
+            {{ form.salary.label }}<br>
+            {{ form.salary(size=20) }}
+        </p>
+        <p>{{ form.submit() }} <button onclick="window.location.href='/'; return false;">Cancel</button></p>
+    </form>
+
+    <!-- Display flash messages if they exist -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <script>
+                alert("{{ messages[0] }}");
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <script>
+    window.onload = function() {
+        var input = document.getElementById("id_field");
+        input.addEventListener("input", function() {
+            input.value = input.value.toUpperCase();
+        });
+    };
+    </script>
+
+</body>
+</html>

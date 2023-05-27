@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Enter Company Information</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=20) }}
+        </p>
+        <p>
+            {{ form.uen.label }}<br>
+            {{ form.uen(size=20) }}
+        </p>
+        <p>
+            {{ form.address.label }}<br>
+            {{ form.address(size=40) }}
+        </p>
+        <p>
+            {{ form.logo.label }}<br>
+            {{ form.logo() }}
+        </p>
+        <p>{{ form.submit() }} <button onclick="window.location.href='/'; return false;">Cancel</button></p>
+    </form>
+</body>
+</html>

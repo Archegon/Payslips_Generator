@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .employee-list li button {
+            display: flex;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Home</h1>
+<!-- Display the logo image -->
+<img src="{{ url_for('static', filename='company_assets/logo.png') }}" alt="Company Logo"
+     style="max-width: 200px; max-height: 200px;">
+<div class="employee-list">
+    <h2>Employees List</h2>
+    <ul>
+        {% for id, employee in employee_data.items() %}
+        <li>{{ employee.Name }} - {{ id }} - $ {{ employee.Salary }}
+            <form action="{{ url_for('edit_employee', employee_id=id) }}" method="GET"
+                  style="display: inline;">
+                <button type="submit">Edit</button>
+            </form>
+            {% endfor %}
+    </ul>
+</div>
+
+<a href="{{ url_for('add_employee') }}">
+    <button>Add Employees</button>
+</a>
+<a href="{{ url_for('edit_company_info') }}">
+    <button>Edit Company Info</button>
+</a>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payslip Generator</title>
+</head>
+<body>
+    <h1>Payslip Generator</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.employee.label }}<br>
+            {{ form.employee() }}
+        </p>
+        <p>
+            {{ form.start_month_year.label }}<br>
+            {{ form.start_month_year() }}
+        </p>
+        <p>
+            {{ form.end_month_year.label }}<br>
+            {{ form.end_month_year() }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+</body>
+</html>
