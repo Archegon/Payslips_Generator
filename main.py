@@ -1,5 +1,9 @@
+import json
 import os
-from datetime import datetime
+import random
+import string
+
+from datetime import datetime, date
 
 from flask import Flask, render_template, request, flash, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -15,6 +19,28 @@ employee_save = Savefile('employees.json')
 company_save = Savefile('company.json')
 
 
+def calculate_age(birthdate_str):
+    # Convert string to date object
+    birthdate = datetime.strptime(birthdate_str, "%d-%m-%Y").date()
+
+    # Calculate age
+    today = date.today()
+    age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+    return age
+
+
+def generate_payslip_id(length=6):
+    # Define the characters that can be used in the payslip ID
+    letters = string.ascii_uppercase
+    numbers = string.digits
+
+    # Generate a random payslip ID
+    payslip_id = ''.join(random.choice(letters) for _ in range(length - 4))
+    payslip_id += ''.join(random.choice(numbers) for _ in range(4))
+
+    return payslip_id
+
 @app.route('/')
 def home():
     employee_data = employee_save.load()
@@ -23,7 +49,7 @@ def home():
     return render_template('home.html', employee_data=employee_data, company_name=company_name)
 
 
-@app.route('/new_payslip')
+@app.route('/new_payslip', methods=['GET', 'POST'])
 def new_payslip():
     form = PayslipForm()
 
@@ -35,12 +61,41 @@ def new_payslip():
     if form.validate_on_submit():
         flash("Payslip submitted successfully!")
 
+        # Extract the form data
+        employee_id = form.employee.data
+        start_month = form.start_month_year.data
+        end_month = form.end_month_year.data
+
+        return render_template('payslipinput.html', employee_id=employee_id, start_month=start_month,
+                               end_month=end_month)
+
     return render_template('payslipinput.html', form=form)
 
 
-@app.route('/preview_payslip')
-def preview_payslip():
-    return render_template('generated_payslip.html')
+@app.route('/preview_payslip/<employee_id>/<start_month>/<end_month>')
+def preview_payslip(employee_id, start_month, end_month):
+    saved_employees = employee_save.load()
+    employee = saved_employees.get(employee_id)
+
+    age = calculate_age(employee['Date of Birth'])
+    payslip_id = generate_payslip_id(6)
+
+    # Package the parameters into a dictionary
+    template_parameters = {
+        'employee_name': employee['Name'],
+        'employee_id': employee_id,
+        'employee_dob': employee['Date of Birth'],
+        'employee_age': age,
+        'employee_position': employee['Position'],
+        'employee_salary': employee['Salary'],
+        'total_income': employee['Salary'],
+        'payslip_id': payslip_id,
+        'start_month': start_month,
+        'end_month': end_month
+    }
+
+    # Pass the dictionary to the template
+    return render_template('generated_payslip.html', **template_parameters)
 
 
 @app.route('/add_employee', methods=['GET', 'POST'])

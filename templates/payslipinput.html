@@ -2,33 +2,97 @@
 <html>
 <head>
     <title>Payslip Generator</title>
+    <style>
+        /* Add this to include padding and border in total width and height */
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            align-items: stretch; /* Change from center to stretch */
+            width: 100%;
+            height: 100%;
+        }
+
+        .form-container {
+            margin-right: 20px;
+        }
+
+        .html-container {
+            background-color: #f0f0f0;
+            padding: 20px;
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
 <h1>Payslip Generator</h1>
-<form method="POST">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.employee.label }}<br>
-        {{ form.employee() }}
-    </p>
-    <p>
-        {{ form.start_month_year.label }}<br>
-        {{ form.start_month_year() }}
-    </p>
-    <p>
-        {{ form.end_month_year.label }}<br>
-        {{ form.end_month_year() }}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
-<!-- Display flash messages if they exist -->
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<script>
-                alert("{{ messages[0] }}");
-
-</script>
-{% endif %}
-{% endwith %}
+<div class="container">
+    <div class="form-container">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.employee.label }}<br>
+                {{ form.employee() }}
+            </p>
+            <p>
+                {{ form.start_month_year.label }}<br>
+                {{ form.start_month_year() }}
+            </p>
+            <p>
+                {{ form.end_month_year.label }}<br>
+                {{ form.end_month_year() }}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+        <!-- Display flash messages if they exist -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <script>
+            alert("{{ messages[0] }}");
+        </script>
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div class="html-container">
+        <iframe src="" class="iframe-container"></iframe>
+    </div>
+</div>
 </body>
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Get form data
+    var employee_id = document.querySelector('select[name="employee"]').value;
+    var start_month = document.querySelector('input[name="start_month_year"]').value;
+    var end_month = document.querySelector('input[name="end_month_year"]').value;
+
+    // Construct the URL for the iframe
+    var iframe_url = "/preview_payslip/" + employee_id + "/" + start_month + "/" + end_month;
+
+    // Update iframe src
+    var iframe = document.querySelector('.iframe-container');
+    iframe.src = iframe_url;
+
+    // Submit the form
+    this.submit();
+});
+</script>
 </html>
