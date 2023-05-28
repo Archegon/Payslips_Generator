@@ -4,7 +4,6 @@ from wtforms.validators import DataRequired
 from datetime import date, datetime
 
 
-
 class EmployeeForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     id = StringField('NRIC/FIN', id='id', validators=[DataRequired()])
@@ -25,7 +24,6 @@ class CompanyForm(FlaskForm):
 class PayslipForm(FlaskForm):
     employee = SelectField('Employee', choices=[], validators=[DataRequired()])
     start_month_year = DateField('Start Month/Year', format='%m/%Y', validators=[DataRequired()])
-    end_month_year = DateField('End Month/Year', format='%m/%Y', validators=[DataRequired()])
     submit = SubmitField('Generate Payslip')
 
     def validate_end_month_year(self, end_month_year):

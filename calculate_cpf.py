@@ -52,6 +52,3 @@ def calculate_cpf(age, total_wages):
         employer_share = int(employer_share)
 
         return total_cpf, employee_share, employer_share
-
-
-print(calculate_cpf(61, 1400))

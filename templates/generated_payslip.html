@@ -3,18 +3,27 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
     <style>
         #full_table {
             width: 950px;
+            height: 1344px;
             margin: 0 auto;
-            /* Center the table */
+            background-color: white;
         }
 
         .center-quarter {
             width: 25%;
         }
 
+         #full_table td {
+            vertical-align: top;
+        }
+
+        #net_pay {
+            border: 2px solid black;
+            padding: 10px;
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -25,6 +34,15 @@
         <td style="width: 100%;">
             <table style="width: 100%;">
                 <tbody>
+                <tr>
+                    <td class="center-quarter"><img src="{{ url_for('static', filename='company_assets/logo.png') }}" alt="Company Logo"
+     style="max-width: 200px; max-height: 200px;"></td>
+                    <td class="center-quarter"></td>
+                    <td class="center-quarter"></td>
+                    <td class="center-quarter"><strong>{{ company_name }}</strong><br>
+                        {{ company_address }}<br>
+                    UEN: {{ company_uen }}</td>
+                </tr>
                 <tr>
                     <td class="center-quarter"><strong>Employee Name:</strong></td>
                     <td class="center-quarter">{{ employee_name }}</td>
@@ -128,7 +146,8 @@
                 </tr>
                 </tbody>
             </table>
-            <p><strong>NET PAY: $ {{ net_pay }}</strong></p>
+            <p>Employer's CPF: $ {{ employer_cpf }}</p>
+            <p id="net_pay"><strong>NET PAY: $ {{ net_pay }}</strong></p>
             <p style="text-align: center;"><em>This is a system generated payslip and does not require a signature.</em>
             </p>
         </td>
