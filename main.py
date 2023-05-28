@@ -7,18 +7,40 @@ from werkzeug.utils import secure_filename
 from forms import CompanyForm, PayslipForm, EmployeeForm
 from save import Savefile
 
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'whatisupdudes'
 app.config['UPLOAD_FOLDER'] = 'company_assets'
 
 employee_save = Savefile('employees.json')
+company_save = Savefile('company.json')
 
 
 @app.route('/')
 def home():
     employee_data = employee_save.load()
-    return render_template('home.html', employee_data=employee_data)
+    company_name = company_save.load()['name']
+
+    return render_template('home.html', employee_data=employee_data, company_name=company_name)
+
+
+@app.route('/new_payslip')
+def new_payslip():
+    form = PayslipForm()
+
+    saved_employees = employee_save.load()
+
+    # Update the choices of the 'employee' field with the loaded employee data
+    form.employee.choices = [(id, employee['Name']) for id, employee in saved_employees.items()]
+
+    if form.validate_on_submit():
+        flash("Payslip submitted successfully!")
+
+    return render_template('payslipinput.html', form=form)
+
+
+@app.route('/preview_payslip')
+def preview_payslip():
+    return render_template('generated_payslip.html')
 
 
 @app.route('/add_employee', methods=['GET', 'POST'])
@@ -72,9 +94,6 @@ def edit_employee(employee_id):
     form.salary.data = employee_data['Salary']
 
     return render_template('employeeinput.html', form=form, employee_id=employee_id)
-
-
-company_save = Savefile('company.json')
 
 
 @app.route('/edit_company_info', methods=['GET', 'POST'])

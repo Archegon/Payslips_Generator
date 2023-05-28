@@ -22,5 +22,13 @@
         </p>
         <p>{{ form.submit() }} <button onclick="window.location.href='/'; return false;">Cancel</button></p>
     </form>
+ <!-- Display flash messages if they exist -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <script>
+                alert("{{ messages[0] }}");
+            </script>
+        {% endif %}
+    {% endwith %}
 </body>
 </html>

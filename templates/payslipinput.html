@@ -4,22 +4,31 @@
     <title>Payslip Generator</title>
 </head>
 <body>
-    <h1>Payslip Generator</h1>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.employee.label }}<br>
-            {{ form.employee() }}
-        </p>
-        <p>
-            {{ form.start_month_year.label }}<br>
-            {{ form.start_month_year() }}
-        </p>
-        <p>
-            {{ form.end_month_year.label }}<br>
-            {{ form.end_month_year() }}
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+<h1>Payslip Generator</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.employee.label }}<br>
+        {{ form.employee() }}
+    </p>
+    <p>
+        {{ form.start_month_year.label }}<br>
+        {{ form.start_month_year() }}
+    </p>
+    <p>
+        {{ form.end_month_year.label }}<br>
+        {{ form.end_month_year() }}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+<!-- Display flash messages if they exist -->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<script>
+                alert("{{ messages[0] }}");
+
+</script>
+{% endif %}
+{% endwith %}
 </body>
 </html>

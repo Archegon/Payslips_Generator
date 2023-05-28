@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #full_table {
+            width: 950px;
+            margin: 0 auto;
+            /* Center the table */
+        }
+
+        .center-quarter {
+            width: 25%;
+        }
+
+    </style>
+</head>
+
+<body>
+<table id="full_table">
+    <tbody>
+    <tr>
+        <td style="width: 100%;">
+            <table style="width: 100%;">
+                <tbody>
+                <tr>
+                    <td class="center-quarter"><strong>Employee Name:</strong></td>
+                    <td class="center-quarter">{{ employee_name }}</td>
+                    <td class="center-quarter">&nbsp;<strong>Payslip ID:</strong></td>
+                    <td class="center-quarter">&nbsp;{{ payslip_id }}</td>
+                </tr>
+                <tr>
+                    <td class="center-quarter"><strong>Employee NRIC/FIN:</strong></td>
+                    <td class="center-quarter">{{ employee_id }}</td>
+                    <td class="center-quarter">&nbsp;<strong>Payroll Month:</strong></td>
+                    <td class="center-quarter">&nbsp;{{payslip_month }}</td>
+                </tr>
+                <tr>
+                    <td class="center-quarter"><strong>Employee DOB:</strong></td>
+                    <td class="center-quarter">{{ employee_dob }} (Age: {{ employee_age }})</td>
+                    <td class="center-quarter">&nbsp;<strong>Salary period:</strong></td>
+                    <td class="center-quarter">&nbsp;{{ payslip_startdate }} - {{ payslip_enddate }}</td>
+                </tr>
+                <tr>
+                    <td class="center-quarter"><strong>Position:</strong></td>
+                    <td class="center-quarter">{{ employee_position }}</td>
+                    <td class="center-quarter">&nbsp;<strong>Payment Status:</strong></td>
+                    <td class="center-quarter">&nbsp;Paid</td>
+                </tr>
+                <tr>
+                    <td class="center-quarter"></td>
+                    <td class="center-quarter"></td>
+                    <td class="center-quarter">&nbsp;<strong>Payment Type / Date:</strong></td>
+                    <td class="center-quarter">&nbsp;Cash / {{ payment_date }}</td>
+                </tr>
+                </tbody>
+            </table>
+            <p>&nbsp;</p>
+            <table style="height: 276px; width: 100%;" border="solid">
+                <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 50%; height: 18px;"><strong>INCOME</strong></td>
+                    <td style="width: 50%; height: 18px;"><strong>DEDUCTIONS</strong></td>
+                </tr>
+                <tr style="height: 258px;">
+                    <td style="width: 50%; height: 258px;">
+                        <table style="height: 100%; width: 100%;">
+                            <tbody>
+                            <tr>
+                                <td style="width: 129.219px;">Basic Salary</td>
+                                <td style="width: 173.781px;">$ {{ employee_salary }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 129.219px;">Total Allowances</td>
+                                <td style="width: 173.781px;">$ 0.00</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 129.219px;">Total Additional</td>
+                                <td style="width: 173.781px;">$ 0.00</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 129.219px;">Total Overtime Pay</td>
+                                <td style="width: 173.781px;">$ 0.00</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 129.219px;">Total Claim</td>
+                                <td style="width: 173.781px;">$ 0.00</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 129.219px;"><strong>TOTAL INCOME</strong></td>
+                                <td style="width: 173.781px;">$ {{ total_income }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width: 50%; height: 258px;">
+                        <table style="height: 100%; width: 100%;">
+                            <tbody>
+                            <tr>
+                                <td style="width: 139.453px;">Deductions</td>
+                                <td style="width: 165.547px;">$ 0.00</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 139.453px;">Employee CPF</td>
+                                <td style="width: 165.547px;">$ {{ employee_cpf }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 139.453px;">Unpaid Leave</td>
+                                <td style="width: 165.547px;">$ 0.00</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 139.453px;">Loan</td>
+                                <td style="width: 165.547px;">$ 0.00</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 139.453px;">&nbsp;</td>
+                                <td style="width: 165.547px;">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 139.453px;"><strong>TOTAL DEDUCTIONS</strong></td>
+                                <td style="width: 165.547px;">$ {{ total_deduction }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p><strong>NET PAY: $ {{ net_pay }}</strong></p>
+            <p style="text-align: center;"><em>This is a system generated payslip and does not require a signature.</em>
+            </p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+
+</html>
