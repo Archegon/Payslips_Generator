@@ -23,9 +23,7 @@ class CompanyForm(FlaskForm):
 
 class PayslipForm(FlaskForm):
     employee = SelectField('Employee', choices=[], validators=[DataRequired()])
+    allowance_pay = StringField('Allowance Pay')
+    overtime_pay = StringField('Overtime Pay')
     start_month_year = DateField('Start Month/Year', format='%m/%Y', validators=[DataRequired()])
     submit = SubmitField('Generate Payslip')
-
-    def validate_end_month_year(self, end_month_year):
-        if end_month_year.data < self.start_month_year.data:
-            raise ValidationError('End Month/Year must not be earlier than Start Month/Year.')

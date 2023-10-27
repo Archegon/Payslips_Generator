@@ -52,6 +52,14 @@
                 {{ form.employee() }}
             </p>
             <p>
+                {{ form.allowance_pay.label }}<br>
+                {{ form.allowance_pay() }}
+            </p>
+             <p>
+                {{ form.overtime_pay.label }}<br>
+                {{ form.overtime_pay() }}
+            </p>
+            <p>
                 {{ form.start_month_year.label }}<br>
                 {{ form.start_month_year() }}
             </p>
@@ -75,6 +83,10 @@
 </div>
 </body>
 <script>
+    // Default values
+    document.querySelector('input[name="overtime_pay"]').defaultValue = 0;
+    document.querySelector('input[name="allowance_pay"]').defaultValue = 0;
+
     document.getElementById('generate_button').addEventListener('click', function() {
         document.getElementById('download_form').style.display = 'block';
     });
@@ -85,9 +97,11 @@
     // Get form data
     var employee_id = document.querySelector('select[name="employee"]').value;
     var start_month = document.querySelector('input[name="start_month_year"]').value;
+    var overtime_pay = document.querySelector('input[name="overtime_pay"]').value;
+    var allowance_pay = document.querySelector('input[name="allowance_pay"]').value;
 
     // Construct the URL for the iframe
-    var iframe_url = "/preview_payslip/" + employee_id + "/" + start_month;
+    var iframe_url = "/preview_payslip/" + employee_id + "/" + start_month + "/" + overtime_pay + "/" + allowance_pay;
 
     // Update iframe src
     var iframe = document.querySelector('.iframe-container');

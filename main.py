@@ -74,11 +74,13 @@ def new_payslip():
     return render_template('payslipinput.html', form=form)
 
 
-@app.route('/preview_payslip/<employee_id>/<start_month>')
-def preview_payslip(employee_id, start_month):
+@app.route('/preview_payslip/<employee_id>/<start_month>/<overtime_pay>/<allowance_pay>')
+def preview_payslip(employee_id, start_month, overtime_pay, allowance_pay):
     saved_employees = employee_save.load()
     company = company_save.load()
     employee = saved_employees.get(employee_id)
+    overtime_pay = float(overtime_pay)
+    allowance_pay = float(allowance_pay)
 
     # Convert to datetime object
     start_month_datetime = datetime.strptime(start_month, "%Y-%m-%d")
@@ -110,15 +112,15 @@ def preview_payslip(employee_id, start_month):
         employee_cpf = cpf[1]
         employer_cpf = cpf[2]
 
-    net_pay = float(employee['Salary']) - employee_cpf
-
     # Convert the string values to float or decimal
     employee_salary = float(employee['Salary'])
     employee_cpf = float(employee_cpf)
     employer_cpf = float(employer_cpf)
     total_deduction = float(employee_cpf)
-    total_income = float(employee['Salary'])
-    net_pay = float(net_pay)
+    total_income = float(employee['Salary']) + overtime_pay + allowance_pay
+
+    # Net pay calculation
+    net_pay = total_income - total_deduction
 
     # Package the parameters into a dictionary
     template_parameters = {
@@ -142,6 +144,8 @@ def preview_payslip(employee_id, start_month):
         'net_pay': "{:.2f}".format(net_pay),
         'payslip_id': payslip_id,
         'start_month': start_month,
+        'overtime_pay': "{:.2f}".format(overtime_pay),
+        'allowance_pay': "{:.2f}".format(allowance_pay)
     }
 
     payslip_html = render_template_string(open("templates/generated_payslip.html").read(), **template_parameters)
