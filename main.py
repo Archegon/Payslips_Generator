@@ -2,12 +2,14 @@ import json
 import os
 import random
 import string
+import pdfkit
+import base64
 
 from calendar import monthrange
 
 from datetime import datetime, date
 
-from flask import Flask, render_template, request, flash, redirect, url_for, send_file, render_template_string
+from flask import Flask, render_template, request, flash, redirect, url_for, send_file, render_template_string, Response
 from werkzeug.utils import secure_filename
 
 from calculate_cpf import calculate_cpf
@@ -17,6 +19,9 @@ from save import Savefile
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'whatisupdudes'
 app.config['UPLOAD_FOLDER'] = 'company_assets'
+
+path_wkhtmltopdf = r'wkhtmltopdf/bin/wkhtmltopdf.exe'
+pdf_config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
 employee_save = Savefile('employees.json')
 company_save = Savefile('company.json')
@@ -31,6 +36,11 @@ def calculate_age(birthdate_str):
     age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
     return age
+
+
+def image_to_base64(image_path):
+    with open(image_path, 'rb') as image_file:
+        return base64.b64encode(image_file.read()).decode()
 
 
 def generate_payslip_id(length=6):
@@ -74,13 +84,25 @@ def new_payslip():
     return render_template('payslipinput.html', form=form)
 
 
-@app.route('/preview_payslip/<employee_id>/<start_month>/<overtime_pay>/<allowance_pay>')
-def preview_payslip(employee_id, start_month, overtime_pay, allowance_pay):
+@app.route('/preview_payslip', methods=['POST'])
+def preview_payslip():
     saved_employees = employee_save.load()
     company = company_save.load()
+
+    # read POST request
+    data = request.get_json()
+    employee_id = data['employee_id']
+    start_month = data['start_month']
+    overtime_pay = data['overtime_pay']
+    allowance_pay = data['allowance_pay']
+
     employee = saved_employees.get(employee_id)
     overtime_pay = float(overtime_pay)
     allowance_pay = float(allowance_pay)
+
+    # Convert Company logo to base64
+    image_path = 'static/company_assets/logo.png'
+    base64_image = image_to_base64(image_path)
 
     # Convert to datetime object
     start_month_datetime = datetime.strptime(start_month, "%Y-%m-%d")
@@ -145,7 +167,8 @@ def preview_payslip(employee_id, start_month, overtime_pay, allowance_pay):
         'payslip_id': payslip_id,
         'start_month': start_month,
         'overtime_pay': "{:.2f}".format(overtime_pay),
-        'allowance_pay': "{:.2f}".format(allowance_pay)
+        'allowance_pay': "{:.2f}".format(allowance_pay),
+        'base64_image': base64_image
     }
 
     payslip_html = render_template_string(open("templates/generated_payslip.html").read(), **template_parameters)
@@ -154,13 +177,55 @@ def preview_payslip(employee_id, start_month, overtime_pay, allowance_pay):
         file.write(payslip_html)
 
     # Pass the dictionary to the template
-    return render_template('generated_payslip.html', **template_parameters)
+    return payslip_html
 
 
-@app.route('/download_payslip', methods=['GET'])
-def download_payslip():
+@app.route('/temp_payslip', methods=['GET'])
+def temp_payslip():
     html_path = 'temp_payslip.html'
     return render_template(html_path)
+
+
+@app.route('/download_payslip', methods=['POST', 'GET'])
+def download_payslip():
+    # Get the HTML output
+    out = render_template("temp_payslip.html")
+
+    # PDF options
+    options = {
+        "orientation": "portrait",
+        "page-size": "A4",
+        "margin-top": "1.0cm",
+        "margin-right": "1.0cm",
+        "margin-bottom": "1.0cm",
+        "margin-left": "1.0cm",
+        "encoding": "UTF-8",
+        'enable-local-file-access': None
+    }
+
+    # Build PDF from HTML
+    pdf = pdfkit.from_string(out, options=options, configuration=pdf_config)
+
+    # read POST request
+    saved_employees = employee_save.load()
+
+    data = request.get_json()
+    employee_id = data['employee_id']
+    start_month = data['start_month']
+
+    employee = saved_employees.get(employee_id)
+    # Convert to datetime object
+    start_month_datetime = datetime.strptime(start_month, "%Y-%m-%d")
+
+    # Extract month name
+    payroll_month = start_month_datetime.strftime("%B-%Y")
+
+    # File name
+    file_name = employee['Name'] + "-" + payroll_month
+
+    # Download the PDF
+    headers = {"Content-Disposition": "attachment;filename=" + file_name + ".pdf"}
+    return Response(pdf, mimetype="application/pdf", headers=headers)
 
 
 @app.route('/add_employee', methods=['GET', 'POST'])

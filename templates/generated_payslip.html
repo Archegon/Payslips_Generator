@@ -24,6 +24,10 @@
             padding: 10px;
             display: inline-block;
         }
+
+        #value-table table {
+             border: 2px solid black;
+        }
     </style>
 </head>
 
@@ -35,7 +39,7 @@
             <table style="width: 100%;">
                 <tbody>
                 <tr>
-                    <td class="center-quarter"><img src="{{ url_for('static', filename='company_assets/logo.png') }}" alt="Company Logo"
+                    <td class="center-quarter"><img src="data:image/png;base64,{{ base64_image }}" alt="Company Logo"
      style="max-width: 200px; max-height: 200px;"></td>
                     <td class="center-quarter"></td>
                     <td class="center-quarter"></td>
@@ -76,7 +80,7 @@
                 </tbody>
             </table>
             <p>&nbsp;</p>
-            <table style="height: 276px; width: 100%;" border="solid">
+            <table id="value-table" style="height: 276px; width: 100%;">
                 <tbody>
                 <tr style="height: 18px;">
                     <td style="width: 50%; height: 18px;"><strong>INCOME</strong></td>
@@ -108,7 +112,7 @@
                             </tr>
                             <tr>
                                 <td style="width: 129.219px;"><strong>TOTAL INCOME</strong></td>
-                                <td style="width: 173.781px;">$ {{ total_income }}</td>
+                                <td style="width: 173.781px;"><u>$ {{ total_income }}</u></td>
                             </tr>
                             </tbody>
                         </table>
@@ -138,7 +142,7 @@
                             </tr>
                             <tr>
                                 <td style="width: 139.453px;"><strong>TOTAL DEDUCTIONS</strong></td>
-                                <td style="width: 165.547px;">$ {{ total_deduction }}</td>
+                                <td style="width: 165.547px;"><u>$ {{ total_deduction }}</u></td>
                             </tr>
                             </tbody>
                         </table>

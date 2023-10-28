@@ -42,7 +42,7 @@
     </style>
 </head>
 <body>
-<h1>Payslip Generator</h1>
+<h1><a href="{{ url_for('home') }}" style="text-decoration: none; color: inherit;">Payslip Generator</a></h1>
 <div class="container">
     <div class="form-container">
         <form method="POST" id="generate_form">
@@ -87,28 +87,108 @@
     document.querySelector('input[name="overtime_pay"]').defaultValue = 0;
     document.querySelector('input[name="allowance_pay"]').defaultValue = 0;
 
+    // Get current date
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + '-' + mm + '-' + dd;
+
+    // Set the default date
+    document.querySelector('input[name="start_month_year"]').value = today;
+
     document.getElementById('generate_button').addEventListener('click', function() {
         document.getElementById('download_form').style.display = 'block';
     });
 
     document.querySelector('form').addEventListener('submit', function(e) {
-    e.preventDefault();
+        // Prevent the default form submission action
+        e.preventDefault();
 
-    // Get form data
-    var employee_id = document.querySelector('select[name="employee"]').value;
-    var start_month = document.querySelector('input[name="start_month_year"]').value;
-    var overtime_pay = document.querySelector('input[name="overtime_pay"]').value;
-    var allowance_pay = document.querySelector('input[name="allowance_pay"]').value;
+        // Get form data
+        var employee_id = document.querySelector('select[name="employee"]').value;
+        var start_month = document.querySelector('input[name="start_month_year"]').value;
+        var overtime_pay = document.querySelector('input[name="overtime_pay"]').value;
+        var allowance_pay = document.querySelector('input[name="allowance_pay"]').value;
 
-    // Construct the URL for the iframe
-    var iframe_url = "/preview_payslip/" + employee_id + "/" + start_month + "/" + overtime_pay + "/" + allowance_pay;
+        // Send a POST request with the form data
+        fetch('/preview_payslip', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                employee_id: employee_id,
+                start_month: start_month,
+                overtime_pay: overtime_pay,
+                allowance_pay: allowance_pay
+            })
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Update iframe src
+            var iframe = document.querySelector('.iframe-container');
+            iframe.src = "/temp_payslip";
+        });
+    });
 
-    // Update iframe src
-    var iframe = document.querySelector('.iframe-container');
-    iframe.src = iframe_url;
+    document.getElementById('download_button').addEventListener('click', function(e) {
+        // Prevent the default form submission action
+        e.preventDefault();
 
-    // Submit the form
-    this.submit();
-});
+        // Get form data
+        var employee_id = document.querySelector('select[name="employee"]').value;
+        var start_month = document.querySelector('input[name="start_month_year"]').value;
+
+        // Send a POST request to your Flask route
+        fetch('/download_payslip', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                employee_id: employee_id,
+                start_month: start_month
+            })
+        }) // Move the .then block outside the fetch function's argument object
+        .then(response => {
+            // Check if the response is a PDF
+            if (response.headers.get('Content-Type') === 'application/pdf') {
+                // Get the filename from the Content-Disposition header
+                const filename = response.headers.get('Content-Disposition').split('filename=')[1];
+
+                // Create a new Blob object from the response data
+                response.blob().then(blob => {
+                    // Create a new object URL for the blob
+                    const url = window.URL.createObjectURL(blob);
+
+                    // Create a new anchor element
+                    const a = document.createElement('a');
+
+                    // Set the href of the anchor element to the object URL
+                    a.href = url;
+
+                    // Set the download attribute of the anchor element to the filename
+                    a.download = filename;
+
+                    // Append the anchor element to the body
+                    document.body.appendChild(a);
+
+                    // Simulate a click on the anchor element
+                    a.click();
+
+                    // Remove the anchor element from the body
+                    document.body.removeChild(a);
+                });
+            } else {
+                // Handle non-PDF responses here
+                console.error('Error: Non-PDF response');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
 </script>
 </html>
